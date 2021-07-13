@@ -34,6 +34,8 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
 
   public static final String DELETE_THING_SHADOW = SERVICE_NAMESPACE + "#DeleteThingShadow";
 
+  public static final String SUBSCRIBE_TO_SERVER_CERTIFICATE_UPDATE = SERVICE_NAMESPACE + "#SubscribeToServerCertificateUpdate";
+
   public static final String DEFER_COMPONENT_UPDATE = SERVICE_NAMESPACE + "#DeferComponentUpdate";
 
   public static final String SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES = SERVICE_NAMESPACE + "#SubscribeToValidateConfigurationUpdates";
@@ -94,6 +96,7 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
     SERVICE_OPERATION_SET.add(PUBLISH_TO_IOT_CORE);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_CONFIGURATION_UPDATE);
     SERVICE_OPERATION_SET.add(DELETE_THING_SHADOW);
+    SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_SERVER_CERTIFICATE_UPDATE);
     SERVICE_OPERATION_SET.add(DEFER_COMPONENT_UPDATE);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES);
     SERVICE_OPERATION_SET.add(CAN_ENTITY_PERFORM);
@@ -161,6 +164,11 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
   public void setDeleteThingShadowHandler(
       Function<OperationContinuationHandlerContext, GeneratedAbstractDeleteThingShadowOperationHandler> handler) {
     operationSupplierMap.put(DELETE_THING_SHADOW, handler);
+  }
+
+  public void setSubscribeToServerCertificateUpdateHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractSubscribeToServerCertificateUpdateOperationHandler> handler) {
+    operationSupplierMap.put(SUBSCRIBE_TO_SERVER_CERTIFICATE_UPDATE, handler);
   }
 
   public void setDeferComponentUpdateHandler(
