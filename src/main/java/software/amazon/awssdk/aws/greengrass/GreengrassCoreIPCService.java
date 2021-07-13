@@ -5,16 +5,17 @@
 
 package software.amazon.awssdk.aws.greengrass;
 
-import software.amazon.awssdk.crt.eventstream.ServerConnectionContinuationHandler;
-import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceHandler;
-import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
-import software.amazon.awssdk.eventstreamrpc.OperationContinuationHandlerContext;
-
+import java.lang.Override;
+import java.lang.String;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import software.amazon.awssdk.crt.eventstream.ServerConnectionContinuationHandler;
+import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceHandler;
+import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
+import software.amazon.awssdk.eventstreamrpc.OperationContinuationHandlerContext;
 
 public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler {
   public static final String SERVICE_NAMESPACE = "aws.greengrass";
@@ -23,33 +24,21 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
 
   public static final String SUBSCRIBE_TO_IOT_CORE = SERVICE_NAMESPACE + "#SubscribeToIoTCore";
 
-  public static final String PUBLISH_TO_TOPIC = SERVICE_NAMESPACE + "#PublishToTopic";
+  public static final String RESUME_COMPONENT = SERVICE_NAMESPACE + "#ResumeComponent";
+
+  public static final String CREATE_AUTH_SESSION = SERVICE_NAMESPACE + "#CreateAuthSession";
 
   public static final String PUBLISH_TO_IOT_CORE = SERVICE_NAMESPACE + "#PublishToIoTCore";
 
   public static final String SUBSCRIBE_TO_CONFIGURATION_UPDATE = SERVICE_NAMESPACE + "#SubscribeToConfigurationUpdate";
 
-  public static final String LIST_COMPONENTS = SERVICE_NAMESPACE + "#ListComponents";
-
-  public static final String CREATE_DEBUG_PASSWORD = SERVICE_NAMESPACE + "#CreateDebugPassword";
+  public static final String DELETE_THING_SHADOW = SERVICE_NAMESPACE + "#DeleteThingShadow";
 
   public static final String DEFER_COMPONENT_UPDATE = SERVICE_NAMESPACE + "#DeferComponentUpdate";
 
-  public static final String SEND_CONFIGURATION_VALIDITY_REPORT = SERVICE_NAMESPACE + "#SendConfigurationValidityReport";
-
-  public static final String UPDATE_CONFIGURATION = SERVICE_NAMESPACE + "#UpdateConfiguration";
-
   public static final String SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES = SERVICE_NAMESPACE + "#SubscribeToValidateConfigurationUpdates";
 
-  public static final String VALIDATE_AUTHORIZATION_TOKEN = SERVICE_NAMESPACE + "#ValidateAuthorizationToken";
-
-  public static final String RESTART_COMPONENT = SERVICE_NAMESPACE + "#RestartComponent";
-
-  public static final String GET_LOCAL_DEPLOYMENT_STATUS = SERVICE_NAMESPACE + "#GetLocalDeploymentStatus";
-
-  public static final String GET_SECRET_VALUE = SERVICE_NAMESPACE + "#GetSecretValue";
-
-  public static final String UPDATE_STATE = SERVICE_NAMESPACE + "#UpdateState";
+  public static final String CAN_ENTITY_PERFORM = SERVICE_NAMESPACE + "#CanEntityPerform";
 
   public static final String GET_CONFIGURATION = SERVICE_NAMESPACE + "#GetConfiguration";
 
@@ -57,55 +46,80 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
 
   public static final String GET_COMPONENT_DETAILS = SERVICE_NAMESPACE + "#GetComponentDetails";
 
+  public static final String PUBLISH_TO_TOPIC = SERVICE_NAMESPACE + "#PublishToTopic";
+
+  public static final String LIST_COMPONENTS = SERVICE_NAMESPACE + "#ListComponents";
+
+  public static final String CREATE_DEBUG_PASSWORD = SERVICE_NAMESPACE + "#CreateDebugPassword";
+
+  public static final String GET_THING_SHADOW = SERVICE_NAMESPACE + "#GetThingShadow";
+
+  public static final String SEND_CONFIGURATION_VALIDITY_REPORT = SERVICE_NAMESPACE + "#SendConfigurationValidityReport";
+
+  public static final String UPDATE_THING_SHADOW = SERVICE_NAMESPACE + "#UpdateThingShadow";
+
+  public static final String UPDATE_CONFIGURATION = SERVICE_NAMESPACE + "#UpdateConfiguration";
+
+  public static final String ATTACH_DEVICE = SERVICE_NAMESPACE + "#AttachDevice";
+
+  public static final String VALIDATE_AUTHORIZATION_TOKEN = SERVICE_NAMESPACE + "#ValidateAuthorizationToken";
+
+  public static final String RESTART_COMPONENT = SERVICE_NAMESPACE + "#RestartComponent";
+
+  public static final String CLOSE_AUTH_SESSION = SERVICE_NAMESPACE + "#CloseAuthSession";
+
+  public static final String GET_LOCAL_DEPLOYMENT_STATUS = SERVICE_NAMESPACE + "#GetLocalDeploymentStatus";
+
+  public static final String GET_SECRET_VALUE = SERVICE_NAMESPACE + "#GetSecretValue";
+
+  public static final String UPDATE_STATE = SERVICE_NAMESPACE + "#UpdateState";
+
+  public static final String LIST_NAMED_SHADOWS_FOR_THING = SERVICE_NAMESPACE + "#ListNamedShadowsForThing";
+
   public static final String SUBSCRIBE_TO_COMPONENT_UPDATES = SERVICE_NAMESPACE + "#SubscribeToComponentUpdates";
 
   public static final String LIST_LOCAL_DEPLOYMENTS = SERVICE_NAMESPACE + "#ListLocalDeployments";
 
   public static final String STOP_COMPONENT = SERVICE_NAMESPACE + "#StopComponent";
 
-  public static final String CREATE_LOCAL_DEPLOYMENT = SERVICE_NAMESPACE + "#CreateLocalDeployment";
-
-  public static final String DELETE_THING_SHADOW = SERVICE_NAMESPACE + "#DeleteThingShadow";
-
-  public static final String UPDATE_THING_SHADOW = SERVICE_NAMESPACE + "#UpdateThingShadow";
-
-  public static final String GET_THING_SHADOW = SERVICE_NAMESPACE + "#GetThingShadow";
-
-  public static final String LIST_NAMED_SHADOWS_FOR_THING = SERVICE_NAMESPACE + "#ListNamedShadowsForThing";
-
   public static final String PAUSE_COMPONENT = SERVICE_NAMESPACE + "#PauseComponent";
 
-  public static final String RESUME_COMPONENT = SERVICE_NAMESPACE + "#ResumeComponent";
+  public static final String CREATE_LOCAL_DEPLOYMENT = SERVICE_NAMESPACE + "#CreateLocalDeployment";
+
   static {
     SERVICE_OPERATION_SET = new HashSet();
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_IOT_CORE);
-    SERVICE_OPERATION_SET.add(PUBLISH_TO_TOPIC);
+    SERVICE_OPERATION_SET.add(RESUME_COMPONENT);
+    SERVICE_OPERATION_SET.add(CREATE_AUTH_SESSION);
     SERVICE_OPERATION_SET.add(PUBLISH_TO_IOT_CORE);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_CONFIGURATION_UPDATE);
-    SERVICE_OPERATION_SET.add(LIST_COMPONENTS);
-    SERVICE_OPERATION_SET.add(CREATE_DEBUG_PASSWORD);
+    SERVICE_OPERATION_SET.add(DELETE_THING_SHADOW);
     SERVICE_OPERATION_SET.add(DEFER_COMPONENT_UPDATE);
-    SERVICE_OPERATION_SET.add(SEND_CONFIGURATION_VALIDITY_REPORT);
-    SERVICE_OPERATION_SET.add(UPDATE_CONFIGURATION);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES);
-    SERVICE_OPERATION_SET.add(VALIDATE_AUTHORIZATION_TOKEN);
-    SERVICE_OPERATION_SET.add(RESTART_COMPONENT);
-    SERVICE_OPERATION_SET.add(GET_LOCAL_DEPLOYMENT_STATUS);
-    SERVICE_OPERATION_SET.add(GET_SECRET_VALUE);
-    SERVICE_OPERATION_SET.add(UPDATE_STATE);
+    SERVICE_OPERATION_SET.add(CAN_ENTITY_PERFORM);
     SERVICE_OPERATION_SET.add(GET_CONFIGURATION);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_TOPIC);
     SERVICE_OPERATION_SET.add(GET_COMPONENT_DETAILS);
+    SERVICE_OPERATION_SET.add(PUBLISH_TO_TOPIC);
+    SERVICE_OPERATION_SET.add(LIST_COMPONENTS);
+    SERVICE_OPERATION_SET.add(CREATE_DEBUG_PASSWORD);
+    SERVICE_OPERATION_SET.add(GET_THING_SHADOW);
+    SERVICE_OPERATION_SET.add(SEND_CONFIGURATION_VALIDITY_REPORT);
+    SERVICE_OPERATION_SET.add(UPDATE_THING_SHADOW);
+    SERVICE_OPERATION_SET.add(UPDATE_CONFIGURATION);
+    SERVICE_OPERATION_SET.add(ATTACH_DEVICE);
+    SERVICE_OPERATION_SET.add(VALIDATE_AUTHORIZATION_TOKEN);
+    SERVICE_OPERATION_SET.add(RESTART_COMPONENT);
+    SERVICE_OPERATION_SET.add(CLOSE_AUTH_SESSION);
+    SERVICE_OPERATION_SET.add(GET_LOCAL_DEPLOYMENT_STATUS);
+    SERVICE_OPERATION_SET.add(GET_SECRET_VALUE);
+    SERVICE_OPERATION_SET.add(UPDATE_STATE);
+    SERVICE_OPERATION_SET.add(LIST_NAMED_SHADOWS_FOR_THING);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_COMPONENT_UPDATES);
     SERVICE_OPERATION_SET.add(LIST_LOCAL_DEPLOYMENTS);
     SERVICE_OPERATION_SET.add(STOP_COMPONENT);
-    SERVICE_OPERATION_SET.add(CREATE_LOCAL_DEPLOYMENT);
-    SERVICE_OPERATION_SET.add(DELETE_THING_SHADOW);
-    SERVICE_OPERATION_SET.add(UPDATE_THING_SHADOW);
-    SERVICE_OPERATION_SET.add(GET_THING_SHADOW);
-    SERVICE_OPERATION_SET.add(LIST_NAMED_SHADOWS_FOR_THING);
     SERVICE_OPERATION_SET.add(PAUSE_COMPONENT);
-    SERVICE_OPERATION_SET.add(RESUME_COMPONENT);
+    SERVICE_OPERATION_SET.add(CREATE_LOCAL_DEPLOYMENT);
   }
 
   private final Map<String, Function<OperationContinuationHandlerContext, ? extends ServerConnectionContinuationHandler>> operationSupplierMap;
@@ -124,9 +138,14 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
     operationSupplierMap.put(SUBSCRIBE_TO_IOT_CORE, handler);
   }
 
-  public void setPublishToTopicHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractPublishToTopicOperationHandler> handler) {
-    operationSupplierMap.put(PUBLISH_TO_TOPIC, handler);
+  public void setResumeComponentHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractResumeComponentOperationHandler> handler) {
+    operationSupplierMap.put(RESUME_COMPONENT, handler);
+  }
+
+  public void setCreateAuthSessionHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractCreateAuthSessionOperationHandler> handler) {
+    operationSupplierMap.put(CREATE_AUTH_SESSION, handler);
   }
 
   public void setPublishToIoTCoreHandler(
@@ -139,14 +158,9 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
     operationSupplierMap.put(SUBSCRIBE_TO_CONFIGURATION_UPDATE, handler);
   }
 
-  public void setListComponentsHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractListComponentsOperationHandler> handler) {
-    operationSupplierMap.put(LIST_COMPONENTS, handler);
-  }
-
-  public void setCreateDebugPasswordHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractCreateDebugPasswordOperationHandler> handler) {
-    operationSupplierMap.put(CREATE_DEBUG_PASSWORD, handler);
+  public void setDeleteThingShadowHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractDeleteThingShadowOperationHandler> handler) {
+    operationSupplierMap.put(DELETE_THING_SHADOW, handler);
   }
 
   public void setDeferComponentUpdateHandler(
@@ -154,44 +168,14 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
     operationSupplierMap.put(DEFER_COMPONENT_UPDATE, handler);
   }
 
-  public void setSendConfigurationValidityReportHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractSendConfigurationValidityReportOperationHandler> handler) {
-    operationSupplierMap.put(SEND_CONFIGURATION_VALIDITY_REPORT, handler);
-  }
-
-  public void setUpdateConfigurationHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractUpdateConfigurationOperationHandler> handler) {
-    operationSupplierMap.put(UPDATE_CONFIGURATION, handler);
-  }
-
   public void setSubscribeToValidateConfigurationUpdatesHandler(
       Function<OperationContinuationHandlerContext, GeneratedAbstractSubscribeToValidateConfigurationUpdatesOperationHandler> handler) {
     operationSupplierMap.put(SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES, handler);
   }
 
-  public void setValidateAuthorizationTokenHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractValidateAuthorizationTokenOperationHandler> handler) {
-    operationSupplierMap.put(VALIDATE_AUTHORIZATION_TOKEN, handler);
-  }
-
-  public void setRestartComponentHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractRestartComponentOperationHandler> handler) {
-    operationSupplierMap.put(RESTART_COMPONENT, handler);
-  }
-
-  public void setGetLocalDeploymentStatusHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractGetLocalDeploymentStatusOperationHandler> handler) {
-    operationSupplierMap.put(GET_LOCAL_DEPLOYMENT_STATUS, handler);
-  }
-
-  public void setGetSecretValueHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractGetSecretValueOperationHandler> handler) {
-    operationSupplierMap.put(GET_SECRET_VALUE, handler);
-  }
-
-  public void setUpdateStateHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractUpdateStateOperationHandler> handler) {
-    operationSupplierMap.put(UPDATE_STATE, handler);
+  public void setCanEntityPerformHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractCanEntityPerformOperationHandler> handler) {
+    operationSupplierMap.put(CAN_ENTITY_PERFORM, handler);
   }
 
   public void setGetConfigurationHandler(
@@ -209,6 +193,81 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
     operationSupplierMap.put(GET_COMPONENT_DETAILS, handler);
   }
 
+  public void setPublishToTopicHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractPublishToTopicOperationHandler> handler) {
+    operationSupplierMap.put(PUBLISH_TO_TOPIC, handler);
+  }
+
+  public void setListComponentsHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractListComponentsOperationHandler> handler) {
+    operationSupplierMap.put(LIST_COMPONENTS, handler);
+  }
+
+  public void setCreateDebugPasswordHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractCreateDebugPasswordOperationHandler> handler) {
+    operationSupplierMap.put(CREATE_DEBUG_PASSWORD, handler);
+  }
+
+  public void setGetThingShadowHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractGetThingShadowOperationHandler> handler) {
+    operationSupplierMap.put(GET_THING_SHADOW, handler);
+  }
+
+  public void setSendConfigurationValidityReportHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractSendConfigurationValidityReportOperationHandler> handler) {
+    operationSupplierMap.put(SEND_CONFIGURATION_VALIDITY_REPORT, handler);
+  }
+
+  public void setUpdateThingShadowHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractUpdateThingShadowOperationHandler> handler) {
+    operationSupplierMap.put(UPDATE_THING_SHADOW, handler);
+  }
+
+  public void setUpdateConfigurationHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractUpdateConfigurationOperationHandler> handler) {
+    operationSupplierMap.put(UPDATE_CONFIGURATION, handler);
+  }
+
+  public void setAttachDeviceHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractAttachDeviceOperationHandler> handler) {
+    operationSupplierMap.put(ATTACH_DEVICE, handler);
+  }
+
+  public void setValidateAuthorizationTokenHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractValidateAuthorizationTokenOperationHandler> handler) {
+    operationSupplierMap.put(VALIDATE_AUTHORIZATION_TOKEN, handler);
+  }
+
+  public void setRestartComponentHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractRestartComponentOperationHandler> handler) {
+    operationSupplierMap.put(RESTART_COMPONENT, handler);
+  }
+
+  public void setCloseAuthSessionHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractCloseAuthSessionOperationHandler> handler) {
+    operationSupplierMap.put(CLOSE_AUTH_SESSION, handler);
+  }
+
+  public void setGetLocalDeploymentStatusHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractGetLocalDeploymentStatusOperationHandler> handler) {
+    operationSupplierMap.put(GET_LOCAL_DEPLOYMENT_STATUS, handler);
+  }
+
+  public void setGetSecretValueHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractGetSecretValueOperationHandler> handler) {
+    operationSupplierMap.put(GET_SECRET_VALUE, handler);
+  }
+
+  public void setUpdateStateHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractUpdateStateOperationHandler> handler) {
+    operationSupplierMap.put(UPDATE_STATE, handler);
+  }
+
+  public void setListNamedShadowsForThingHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractListNamedShadowsForThingOperationHandler> handler) {
+    operationSupplierMap.put(LIST_NAMED_SHADOWS_FOR_THING, handler);
+  }
+
   public void setSubscribeToComponentUpdatesHandler(
       Function<OperationContinuationHandlerContext, GeneratedAbstractSubscribeToComponentUpdatesOperationHandler> handler) {
     operationSupplierMap.put(SUBSCRIBE_TO_COMPONENT_UPDATES, handler);
@@ -224,19 +283,14 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
     operationSupplierMap.put(STOP_COMPONENT, handler);
   }
 
-  public void setCreateLocalDeploymentHandler(
-      Function<OperationContinuationHandlerContext, GeneratedAbstractCreateLocalDeploymentOperationHandler> handler) {
-    operationSupplierMap.put(CREATE_LOCAL_DEPLOYMENT, handler);
-  }
-
   public void setPauseComponentHandler(
       Function<OperationContinuationHandlerContext, GeneratedAbstractPauseComponentOperationHandler> handler) {
     operationSupplierMap.put(PAUSE_COMPONENT, handler);
   }
 
-  public void setResumeComponentHandler(
-          Function<OperationContinuationHandlerContext, GeneratedAbstractResumeComponentOperationHandler> handler) {
-    operationSupplierMap.put(RESUME_COMPONENT, handler);
+  public void setCreateLocalDeploymentHandler(
+      Function<OperationContinuationHandlerContext, GeneratedAbstractCreateLocalDeploymentOperationHandler> handler) {
+    operationSupplierMap.put(CREATE_LOCAL_DEPLOYMENT, handler);
   }
 
   @Override
