@@ -64,6 +64,8 @@ public final class GreengrassCoreIPCService extends EventStreamRPCServiceHandler
 
   public static final String ATTACH_DEVICE = SERVICE_NAMESPACE + "#AttachDevice";
 
+  public static final String UPDATE_CONFIGURATION = SERVICE_NAMESPACE + "#UpdateConfiguration";
+
   public static final String VALIDATE_AUTHORIZATION_TOKEN = SERVICE_NAMESPACE + "#ValidateAuthorizationToken";
 
   public static final String RESTART_COMPONENT = SERVICE_NAMESPACE + "#RestartComponent";
