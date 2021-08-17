@@ -17,14 +17,22 @@ import com.aws.greengrass.util.Utils;
 import com.aws.greengrass.util.exceptions.InvalidEnvironmentStageException;
 import com.aws.greengrass.util.exceptions.TLSAuthException;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import sun.security.pkcs11.SunPKCS11;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.List;
+import javax.crypto.Cipher;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
@@ -34,6 +42,18 @@ import javax.security.auth.x500.X500Principal;
 public final class ClientConfigurationUtils {
 
     private static final Logger logger = LogManager.getLogger(ClientConfigurationUtils.class);
+
+    private static final Provider sunPkcsProvider;
+    private static final char[] userPin = "7526".toCharArray();
+
+    static {
+        Path configPath = Paths.get(System.getProperty("user.home"), "Workspace", "hsm", "pkcs11.cfg");
+        logger.atInfo().kv("configPath", configPath).log("pkcs11 config path");
+        sunPkcsProvider = new SunPKCS11(configPath.toString());
+        if (Security.addProvider(sunPkcsProvider) == -1) {
+            throw new RuntimeException("Could not configure SunPKCS11 provider");
+        }
+    }
 
     private ClientConfigurationUtils() {
     }
@@ -94,15 +114,15 @@ public final class ClientConfigurationUtils {
         try {
             List<X509Certificate> trustCertificates = EncryptionUtils.loadX509Certificates(rootCAPath);
 
-            KeyStore tmKeyStore = KeyStore.getInstance("JKS");
-            tmKeyStore.load(null, null);
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(null, userPin);
             for (X509Certificate certificate : trustCertificates) {
                 X500Principal principal = certificate.getSubjectX500Principal();
                 String name = principal.getName("RFC2253");
-                tmKeyStore.setCertificateEntry(name, certificate);
+                keyStore.setCertificateEntry(name, certificate);
             }
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
-            trustManagerFactory.init(tmKeyStore);
+            trustManagerFactory.init(keyStore);
             return trustManagerFactory.getTrustManagers();
         } catch (GeneralSecurityException | IOException e) {
             throw new TLSAuthException("Failed to get trust manager", e);
@@ -112,13 +132,26 @@ public final class ClientConfigurationUtils {
     private static KeyManager[] createKeyManagers(String privateKeyPath, String certificatePath)
             throws TLSAuthException {
         try {
-            List<X509Certificate> certificateChain = EncryptionUtils.loadX509Certificates(certificatePath);
+            //List<X509Certificate> certificateChain = EncryptionUtils.loadX509Certificates(certificatePath);
 
-            PrivateKey privateKey = EncryptionUtils.loadPrivateKey(privateKeyPath);
+            //PrivateKey privateKey = EncryptionUtils.loadPrivateKey(privateKeyPath);
 
-            KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(null);
-            keyStore.setKeyEntry("private-key", privateKey, null, certificateChain.toArray(new Certificate[0]));
+            KeyStore keyStore = KeyStore.getInstance("PKCS11", sunPkcsProvider);
+            keyStore.load(null, userPin);
+//            keyStore.setKeyEntry("private-key", privateKey, null, certificateChain.toArray(new Certificate[0]));
+//            keyStore.store(null);
+//            PrivateKey privateKey = (PrivateKey) keyStore.getKey("iotkey", userPin);
+//            logger.atInfo().kv("privateKey", privateKey).log("private key in HSM");
+//            PublicKey publicKey = keyStore.getCertificate("iotkey").getPublicKey();
+//            logger.atInfo().kv("publicKey", publicKey).log("public key in HSM");
+//            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", sunPkcsProvider);
+//            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+//            String text = "this is a plain text";
+//            byte[] encrypted = cipher.doFinal(text.getBytes());
+//            logger.atInfo().kv("encrypted", Base64.getEncoder().encodeToString(encrypted)).log("Encrypted text");
+//            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+//            byte[] decrypted = cipher.doFinal(encrypted);
+//            logger.atInfo().kv("decrypted", new String(decrypted)).log("Decrypted text");
 
             KeyManagerFactory keyManagerFactory =
                     KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
