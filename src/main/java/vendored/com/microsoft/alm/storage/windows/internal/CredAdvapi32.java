@@ -23,7 +23,7 @@ import java.util.List;
  * Please refer to MSDN documentations for each method usage pattern
  */
 public interface CredAdvapi32 extends StdCallLibrary {
-    CredAdvapi32 INSTANCE = Native.load("Advapi32", CredAdvapi32.class, W32APIOptions.UNICODE_OPTIONS);
+    CredAdvapi32 INSTANCE = Native.load("Advapi32", CredAdvapi32.class, W32APIOptions.ASCII_OPTIONS);
 
     /**
      * CredRead flag

@@ -34,7 +34,7 @@ public interface SystemServiceUtils {
             throws IOException, InterruptedException {
         logger.atDebug(eventName).log(command);
         boolean success = Platform.getInstance().createNewProcessRunner().withShell(command)
-                .withUser(Platform.getInstance().getPrivilegedUser())
+//                .withUser(Platform.getInstance().getPrivilegedUser())
                 .withOut(s -> logger.atWarn(eventName).kv("command", command)
                         .kv("stdout", s.toString().trim()).log())
                 .withErr(s -> logger.atError(eventName).kv("command", command)

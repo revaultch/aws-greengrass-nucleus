@@ -102,7 +102,12 @@ public class WindowsExec extends Exec {
     private Process createRunasProcess(String... commands) throws IOException {
         String username = userDecorator.getUser();
 
-        byte[] credBlob = WindowsCredUtils.read(username);
+        byte[] credBlob;
+        try {
+            credBlob = WindowsCredUtils.read(username);
+        } catch (IOException e) {
+            throw new IOException("Could not lookup credential for '" + username + "'", e);
+        }
         ByteBuffer bb = ByteBuffer.wrap(credBlob);
         CharBuffer cb = StandardCharsets.UTF_8.decode(bb);
 
@@ -111,8 +116,8 @@ public class WindowsExec extends Exec {
         args.add(runasExePath);
         args.add("-u:" + username);  // runas username
         args.add("-p:" + cb);  // plain text password. TODO revisit this because it exposes plaintext password
-        args.add("-l:off");  // disable logging
-        args.add("-b:0"); // set exit code base number to 0
+        args.add("-l:debug");  // disable logging
+        //args.add("-b:0"); // set exit code base number to 0
         args.add("-w:" + dir); // set workdir explicitly
         // runas is un-escaping customer-provided quotes and escape characters, so we need to escape them
         // first so they unwrap correctly.
@@ -121,9 +126,11 @@ public class WindowsExec extends Exec {
                 .collect(Collectors.toList());
         args.addAll(cmd);
 
+        args = args.stream().map(s -> s.replace("\u0000","")).collect(Collectors.toList());
         Arrays.fill(cb.array(), (char) 0);  // zero-out temporary buffers
         Arrays.fill(bb.array(), (byte) 0);
 
+        logger.atTrace().kv("runas", String.join(" ", args)).log();
         ProcessBuilder pb = new ProcessBuilder();
         pb.environment().putAll(environment);
         Process p = pb.directory(dir).command(args).start();

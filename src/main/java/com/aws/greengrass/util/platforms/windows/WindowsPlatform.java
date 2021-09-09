@@ -273,7 +273,8 @@ public class WindowsPlatform extends Platform {
             // We automatically add permissions for SYSTEM user since that is how the Greengrass service
             // will be running. Without this, SYSTEM would not have access when Greengrass is installed by a normal
             // or admin user.
-            UserPrincipal systemPrincipal = WindowsPlatform.getInstance().lookupUserByName(path, LOCAL_SYSTEM_USERNAME);
+            UserPrincipal systemPrincipal = WindowsPlatform.getInstance().lookupUserByName(path, System.getProperty(
+                    "user.name"));
 
             Set<AclEntryFlag> flags = new HashSet<>();
             flags.add(AclEntryFlag.DIRECTORY_INHERIT);
