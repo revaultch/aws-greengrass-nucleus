@@ -22,12 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.ClientTlsContext;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
-import software.amazon.awssdk.crt.io.SocketOptions;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
@@ -167,6 +162,23 @@ public class MqttClient implements Closeable {
         HttpProxyOptions httpProxyOptions = ProxyUtils.getHttpProxyOptions(deviceConfiguration);
 
         if (httpProxyOptions == null) {
+            Pkcs11Lib pkcs11Lib = new Pkcs11Lib("/lib64/libsofthsm2.so");
+            TlsContextPkcs11Options tlsContextPkcs11Options = new TlsContextPkcs11Options(pkcs11Lib).withSlotId(0L)
+                    .withPrivateKeyObjectLabel("rsa-privkey").withUserPin("0000").withTokenLabel("test")
+                    .withCertificateFilePath(Coerce.toString(deviceConfiguration.getCertificateFilePath()));
+
+            this.builderProvider = (clientBootstrap) -> AwsIotMqttConnectionBuilder.newMtlsBuilderFromPkcs11(tlsContextPkcs11Options)
+                    .withCertificateAuthorityFromPath(null, Coerce.toString(deviceConfiguration.getRootCAFilePath()))
+                    .withEndpoint(Coerce.toString(deviceConfiguration.getIotDataEndpoint()))
+                    .withPort((short) Coerce.toInt(mqttTopics.findOrDefault(DEFAULT_MQTT_PORT, MQTT_PORT_KEY)))
+                    .withCleanSession(false).withBootstrap(clientBootstrap).withKeepAliveMs(Coerce.toInt(
+                            mqttTopics.findOrDefault(DEFAULT_MQTT_KEEP_ALIVE_TIMEOUT, MQTT_KEEP_ALIVE_TIMEOUT_KEY)))
+                    .withProtocolOperationTimeoutMs(getMqttOperationTimeoutMillis())
+                    .withPingTimeoutMs(
+                            Coerce.toInt(mqttTopics.findOrDefault(DEFAULT_MQTT_PING_TIMEOUT, MQTT_PING_TIMEOUT_KEY)))
+                    .withSocketOptions(new SocketOptions()).withTimeoutMs(Coerce.toInt(
+                            mqttTopics.findOrDefault(DEFAULT_MQTT_SOCKET_TIMEOUT, MQTT_SOCKET_TIMEOUT_KEY)));
+            /*
             this.builderProvider = (clientBootstrap) -> AwsIotMqttConnectionBuilder
                     .newMtlsBuilderFromPath(Coerce.toString(deviceConfiguration.getCertificateFilePath()),
                             Coerce.toString(deviceConfiguration.getPrivateKeyFilePath()))
@@ -180,6 +192,8 @@ public class MqttClient implements Closeable {
                             Coerce.toInt(mqttTopics.findOrDefault(DEFAULT_MQTT_PING_TIMEOUT, MQTT_PING_TIMEOUT_KEY)))
                     .withSocketOptions(new SocketOptions()).withTimeoutMs(Coerce.toInt(
                             mqttTopics.findOrDefault(DEFAULT_MQTT_SOCKET_TIMEOUT, MQTT_SOCKET_TIMEOUT_KEY)));
+
+             */
         } else {
             String tesRoleAlias = Coerce.toString(deviceConfiguration.getIotRoleAlias());
 
