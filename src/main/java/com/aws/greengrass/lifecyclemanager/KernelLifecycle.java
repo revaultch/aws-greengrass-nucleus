@@ -45,18 +45,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -346,7 +335,7 @@ public class KernelLifecycle {
 
     @SuppressWarnings("PMD.CloseResource")
     private Queue<String> findBuiltInServicesAndPlugins() {
-        Queue<String> autostart = new LinkedList<>();
+        List<ImplementsService> autostart = new LinkedList<>();
         try {
             EZPlugins pim = kernel.getContext().get(EZPlugins.class);
             pim.withCacheDirectory(nucleusPaths.pluginPath());
@@ -358,7 +347,7 @@ public class KernelLifecycle {
                 }
                 ImplementsService is = cl.getAnnotation(ImplementsService.class);
                 if (is.autostart()) {
-                    autostart.add(is.name());
+                    autostart.add(is);
                 }
                 serviceImplementors.put(is.name(), cl);
                 logger.atInfo().log("Found Plugin: {}", cl.getSimpleName());
@@ -366,7 +355,13 @@ public class KernelLifecycle {
         } catch (IOException t) {
             logger.atError().log("Error finding built in service plugins", t);
         }
-        return autostart;
+
+        return autostart
+                .stream()
+                .sorted(Comparator.comparing(ImplementsService::priority))
+                .map(ImplementsService::name)
+                .collect(Collectors.toCollection(LinkedList::new));
+
     }
 
     @SuppressWarnings("PMD.CloseResource")

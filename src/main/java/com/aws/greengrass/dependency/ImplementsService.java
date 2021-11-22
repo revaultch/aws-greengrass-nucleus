@@ -27,4 +27,6 @@ public @interface ImplementsService {
      * Version of the service. By default it is 0.0.0. Must be in the form of a.b.c.
      */
     @Nonnull String version() default "0.0.0";
+
+    int priority() default 100;
 }
