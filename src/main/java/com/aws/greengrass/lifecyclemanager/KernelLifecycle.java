@@ -34,6 +34,7 @@ import com.aws.greengrass.provisioning.exceptions.RetryableProvisioningException
 import com.aws.greengrass.telemetry.impl.config.TelemetryConfig;
 import com.aws.greengrass.util.CommitableFile;
 import com.aws.greengrass.util.NucleusPaths;
+import com.aws.greengrass.util.Pair;
 import com.aws.greengrass.util.RetryUtils;
 import com.aws.greengrass.util.Utils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -345,9 +346,10 @@ public class KernelLifecycle {
         }
     }
 
+
     @SuppressWarnings("PMD.CloseResource")
     private Queue<String> findBuiltInServicesAndPlugins() {
-        List<ImplementsService> autostart = new LinkedList<>();
+        List<Pair<Integer, String>> autostart = new LinkedList<>();
         try {
             EZPlugins pim = kernel.getContext().get(EZPlugins.class);
             pim.withCacheDirectory(nucleusPaths.pluginPath());
@@ -359,7 +361,8 @@ public class KernelLifecycle {
                 }
                 ImplementsService is = cl.getAnnotation(ImplementsService.class);
                 if (is.autostart()) {
-                    autostart.add(is);
+                    logger.info("adding plugin to autoStart {}", cl.getSimpleName());
+                    autostart.add(new Pair<>(is.priority(), is.name()));
                 }
                 serviceImplementors.put(is.name(), cl);
                 logger.atInfo().log("Found Plugin: {}", cl.getSimpleName());
@@ -367,13 +370,14 @@ public class KernelLifecycle {
         } catch (IOException t) {
             logger.atError().log("Error finding built in service plugins", t);
         }
-
-        return autostart
+        logger.info("autostart prios {}", autostart);
+        Queue<String> autoStartNames = autostart
                 .stream()
-                .sorted(Comparator.comparing(ImplementsService::priority))
-                .map(ImplementsService::name)
+                .sorted(Comparator.comparing(Pair::getLeft))
+                .map(Pair::getRight)
                 .collect(Collectors.toCollection(LinkedList::new));
-
+        logger.info("autostart names {}", autoStartNames);
+        return autoStartNames;
     }
 
     @SuppressWarnings("PMD.CloseResource")
