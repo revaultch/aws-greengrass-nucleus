@@ -22,13 +22,10 @@ import com.aws.greengrass.util.Utils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.io.SocketOptions;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
@@ -188,7 +185,7 @@ public class MqttClient implements Closeable {
                             mqttTopics.findOrDefault(DEFAULT_MQTT_SOCKET_TIMEOUT, MQTT_SOCKET_TIMEOUT_KEY)));
             //HttpProxyOptions httpProxyOptions = ProxyUtils.getHttpProxyOptions(deviceConfiguration, proxyTlsContext);
             //if (httpProxyOptions != null) {
-                //builder.withHttpProxyOptions(httpProxyOptions);
+            //  builder.withHttpProxyOptions(httpProxyOptions);
             //}
             return builder;
         };
@@ -314,12 +311,14 @@ public class MqttClient implements Closeable {
         //this.proxyTlsContext = new ClientTlsContext(proxyTlsOptions);
     }
 
+    /*
     private TlsContextOptions getTlsContextOptions(DeviceConfiguration deviceConfiguration) {
         String rootCaPath = Coerce.toString(deviceConfiguration.getRootCAFilePath());
         return Utils.isNotEmpty(rootCaPath)
                 ? TlsContextOptions.createDefaultClient().withCertificateAuthorityFromPath(null, rootCaPath)
                 : TlsContextOptions.createDefaultClient();
     }
+    */
 
     private void validateAndSetMqttPublishConfiguration() {
         maxInFlightPublishes = Coerce.toInt(mqttTopics

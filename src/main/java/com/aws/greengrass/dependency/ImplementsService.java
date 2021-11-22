@@ -28,5 +28,8 @@ public @interface ImplementsService {
      */
     @Nonnull String version() default "0.0.0";
 
+    /**
+     * Priority of service loading, default is 100.
+     */
     int priority() default 100;
 }
