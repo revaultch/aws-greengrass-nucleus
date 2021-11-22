@@ -122,8 +122,8 @@ public class MqttClient implements Closeable {
     private final Spool spool;
     private final ExecutorService executorService;
 
-    private final TlsContextOptions proxyTlsOptions;
-    private final ClientTlsContext proxyTlsContext;
+    //private final TlsContextOptions proxyTlsOptions;
+    //private final ClientTlsContext proxyTlsContext;
 
     private ScheduledExecutorService ses;
     private final AtomicReference<Future<?>> spoolingFuture = new AtomicReference<>();
@@ -186,10 +186,10 @@ public class MqttClient implements Closeable {
                             Coerce.toInt(mqttTopics.findOrDefault(DEFAULT_MQTT_PING_TIMEOUT, MQTT_PING_TIMEOUT_KEY)))
                     .withSocketOptions(new SocketOptions()).withTimeoutMs(Coerce.toInt(
                             mqttTopics.findOrDefault(DEFAULT_MQTT_SOCKET_TIMEOUT, MQTT_SOCKET_TIMEOUT_KEY)));
-            HttpProxyOptions httpProxyOptions = ProxyUtils.getHttpProxyOptions(deviceConfiguration, proxyTlsContext);
-            if (httpProxyOptions != null) {
-                builder.withHttpProxyOptions(httpProxyOptions);
-            }
+            //HttpProxyOptions httpProxyOptions = ProxyUtils.getHttpProxyOptions(deviceConfiguration, proxyTlsContext);
+            //if (httpProxyOptions != null) {
+                //builder.withHttpProxyOptions(httpProxyOptions);
+            //}
             return builder;
         };
     }
@@ -201,8 +201,8 @@ public class MqttClient implements Closeable {
         this.executorService = executorService;
         this.ses = ses;
 
-        this.proxyTlsOptions = getTlsContextOptions(deviceConfiguration);
-        this.proxyTlsContext = new ClientTlsContext(proxyTlsOptions);
+        //this.proxyTlsOptions = getTlsContextOptions(deviceConfiguration);
+        //this.proxyTlsContext = new ClientTlsContext(proxyTlsOptions);
 
         mqttTopics = this.deviceConfiguration.getMQTTNamespace();
         this.builderProvider = builderProvider;
@@ -310,8 +310,8 @@ public class MqttClient implements Closeable {
         this.executorService = executorService;
         validateAndSetMqttPublishConfiguration();
 
-        this.proxyTlsOptions = getTlsContextOptions(deviceConfiguration);
-        this.proxyTlsContext = new ClientTlsContext(proxyTlsOptions);
+        //this.proxyTlsOptions = getTlsContextOptions(deviceConfiguration);
+        //this.proxyTlsContext = new ClientTlsContext(proxyTlsOptions);
     }
 
     private TlsContextOptions getTlsContextOptions(DeviceConfiguration deviceConfiguration) {
@@ -767,8 +767,8 @@ public class MqttClient implements Closeable {
         }
 
         connections.forEach(AwsIotMqttClient::close);
-        proxyTlsOptions.close();
-        proxyTlsContext.close();
+        //proxyTlsOptions.close();
+        //proxyTlsContext.close();
         clientBootstrap.close();
         hostResolver.close();
         eventLoopGroup.close();
