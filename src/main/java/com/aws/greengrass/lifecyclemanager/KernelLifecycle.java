@@ -153,7 +153,7 @@ public class KernelLifecycle {
         }
 
         mainService = kernel.locateIgnoreError(KernelCommandLine.MAIN_SERVICE_NAME);
-
+        logger.info("autostarting the following plugins {}", autostart);
         autostart.forEach(s -> {
             try {
                 mainService.addOrUpdateDependency(kernel.locate(s), DependencyType.HARD, true);
