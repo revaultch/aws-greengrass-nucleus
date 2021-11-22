@@ -127,7 +127,7 @@ public final class DeploymentDocumentConverter {
                 if (runWithInfo != null) {
                     packageConfigurations.computeIfAbsent(componentName, DeploymentPackageConfiguration::new);
                     RunWith runWith = RunWith.builder().posixUser(runWithInfo.getPosixUser())
-                            .windowsUser(runWithInfo.getWindowsUser())
+                            .windowsUser(runWithInfo.getPosixUser())
                             .systemResourceLimits(convertSystemResourceLimits(runWithInfo.getSystemResourceLimits()))
                             .build();
                     packageConfigurations.get(componentName).setRunWith(runWith);

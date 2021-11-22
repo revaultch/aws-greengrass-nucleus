@@ -89,7 +89,7 @@ class DeploymentDocumentConverterTest {
         Map<String, RunWithInfo> componentToRunWithInfo = new HashMap<>();
         RunWithInfo runWithInfo = new RunWithInfo();
         runWithInfo.setPosixUser("foo:bar");
-        runWithInfo.setWindowsUser("testWindowsUser");
+        runWithInfo.setPosixUser("testWindowsUser");
         SystemResourceLimits limits = new SystemResourceLimits();
         limits.setMemory(102400L);
         limits.setCpus(1.5);
@@ -97,7 +97,7 @@ class DeploymentDocumentConverterTest {
         componentToRunWithInfo.put(NEW_ROOT_COMPONENT, runWithInfo);
         runWithInfo = new RunWithInfo();
         runWithInfo.setPosixUser("1234");
-        runWithInfo.setWindowsUser("testWindowsUser2");
+        runWithInfo.setPosixUser("testWindowsUser2");
         componentToRunWithInfo.put(DEPENDENCY_COMPONENT, runWithInfo);
 
         // Existing: ROOT_COMPONENT_TO_REMOVE_1-1.0.0, ROOT_COMPONENT_TO_REMOVE_2-2.0.0, EXISTING_ROOT_COMPONENT-2.0.0
